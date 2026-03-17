@@ -5,6 +5,7 @@ Generally speaking, you should browse the codebase to figure out what is going o
 ## Task Completion Requirements
 
 - All of `bun fmt`, `bun lint`, and `bun typecheck` must pass before considering tasks completed.
+- Never use `bun test`, use `bun run test` (runs Vitest).
 
 ## Project Snapshot
 

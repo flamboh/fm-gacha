@@ -15,6 +15,14 @@ export default [
     },
   },
   {
-    ignores: ['eslint.config.js', 'prettier.config.js'],
+    ignores: [
+      'convex/_generated/**',
+      'dist/**',
+      '.tanstack/**',
+      '.wrangler/**',
+      'src/routeTree.gen.ts',
+      'eslint.config.js',
+      'prettier.config.js',
+    ],
   },
 ]

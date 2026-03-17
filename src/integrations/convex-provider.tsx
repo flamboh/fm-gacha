@@ -1,17 +1,21 @@
+import type { ReactNode } from 'react'
 import { ConvexProvider } from 'convex/react'
 import { ConvexQueryClient } from '@convex-dev/react-query'
+import { appEnv } from '#/lib/env'
 
-const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL
-if (!CONVEX_URL) {
-  console.error('missing envar CONVEX_URL')
-}
-const convexQueryClient = new ConvexQueryClient(CONVEX_URL)
+const convexQueryClient = appEnv.convexUrl
+  ? new ConvexQueryClient(appEnv.convexUrl)
+  : null
 
 export default function AppConvexProvider({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
+  if (!convexQueryClient) {
+    return <>{children}</>
+  }
+
   return (
     <ConvexProvider client={convexQueryClient.convexClient}>
       {children}
