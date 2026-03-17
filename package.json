@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.3",
-    "@cloudflare/vite-plugin": "^1.26.0",
+    "@cloudflare/vite-plugin": "1.29.0",
     "@convex-dev/react-query": "0.1.0",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
@@ -47,7 +47,6 @@
     "typescript": "^5.7.2",
     "vite": "^7.3.1",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.1.0",
     "wrangler": "^4.70.0"
   },
   "pnpm": {
