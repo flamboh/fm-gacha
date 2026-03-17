@@ -7,10 +7,6 @@ export default function AppClerkProvider({
 }: {
   children: ReactNode
 }) {
-  if (!appEnv.clerkPublishableKey) {
-    return <>{children}</>
-  }
-
   return (
     <ClerkProvider
       publishableKey={appEnv.clerkPublishableKey}

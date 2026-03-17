@@ -21,6 +21,10 @@ This repository is WIP. Proposing sweeping changes that improve long-term mainta
 
 If a tradeoff is required, choose correctness and robustness over short-term convenience.
 
+Do not add excessive fallbacks. Errors like missing env are critical and shouldn't be masked by fallbacks. Logic should be simple, with reasonable expecations, don't `try except` everything.
+
+Keep files under ~400 lines. Refactor as neeeded to meet this.
+
 ## Maintainability
 
 Long term maintainability is a core priority. If you add new functionality, first check if there are shared logic that can be extracted to a separate module. Duplicate logic across mulitple files is a code smell and should be avoided. Don't be afraid to change existing code. Don't take shortcuts by just adding local logic to solve a problem.
@@ -33,6 +37,9 @@ Long term maintainability is a core priority. If you add new functionality, firs
 ## Expectations
 
 - Use shadcn for base components `bunx --bun shadcn@latest add {component}`
+- Use dark mode color scheme in src/styles.css
+- Keep designs simple, no over explaining, plain colors, no gradients, no decorative elements.
+- Assume dev servers for both Convex and `bun dev` are already running.
 
 ## References
 
