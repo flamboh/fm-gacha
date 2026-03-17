@@ -17,19 +17,20 @@ export const packCardValidator = v.object({
   listeners: v.number(),
   playcount: v.number(),
   playListenerRatio: v.optional(v.number()),
+  imageUrl: v.optional(v.string()),
+  publishedAt: v.optional(v.string()),
+  wikiSummary: v.optional(v.string()),
   durationMs: v.optional(v.number()),
   sourceTag: v.string(),
   rarity: rarityValidator,
 })
 
-export const packFields = {
-  ownerKey: v.string(),
-  openedAt: v.number(),
+export const openedPackFields = {
   themeTag: v.string(),
   cards: v.array(packCardValidator),
 }
 
-export const packValidator = v.object(packFields)
+export const openedPackValidator = v.object(openedPackFields)
 
 export type PackRarity = 'common' | 'uncommon' | 'rare' | 'mythic'
 
@@ -43,14 +44,15 @@ export type PackCard = {
   listeners: number
   playcount: number
   playListenerRatio?: number
+  imageUrl?: string
+  publishedAt?: string
+  wikiSummary?: string
   durationMs?: number
   sourceTag: string
   rarity: PackRarity
 }
 
-export type StoredPack = {
-  ownerKey: string
-  openedAt: number
+export type OpenedPack = {
   themeTag: string
   cards: PackCard[]
 }

@@ -1,5 +1,6 @@
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 import type { CSSProperties, JSX, KeyboardEvent } from 'react'
+import { TrackCardFace } from '#/components/track-card-face'
 import { Card, CardContent } from '#/components/ui/card'
 
 export type PackCarouselCard = {
@@ -12,6 +13,10 @@ export type PackCarouselCard = {
   listeners: number
   playcount: number
   playListenerRatio?: number
+  imageUrl?: string
+  publishedAt?: string
+  wikiSummary?: string
+  sourceTag: string
   rarity: 'common' | 'uncommon' | 'rare' | 'mythic'
 }
 
@@ -32,19 +37,8 @@ type ArrowButtonProps = {
   onClick: () => void
 }
 
-type TrackCardContentProps = {
-  card: PackCarouselCard
-}
-
 const playingCardClass =
   'bg-card text-card-foreground h-full w-full overflow-hidden rounded-[1.75rem] border-2 border-border/70 py-0 text-left shadow-[0_24px_60px_-36px_rgba(0,0,0,0.9)]'
-
-const rarityCopy = {
-  common: 'Common',
-  uncommon: 'Uncommon',
-  rare: 'Rare',
-  mythic: 'Mythic',
-} satisfies Record<PackCarouselCard['rarity'], string>
 
 export function PackCarousel({
   cards,
@@ -121,12 +115,16 @@ export function PackCarousel({
                     className={`relative h-[27.5rem] w-[19.5rem] transition-transform duration-150 ${isCurrentCard ? 'group cursor-pointer hover:scale-[1.02] hover:-translate-y-2 active:scale-95' : ''}`}
                   >
                     <Card className={playingCardClass}>
-                      <CardContent className="relative flex h-full min-h-0 flex-col justify-between p-5 sm:p-6">
+                      <CardContent className="relative flex h-full min-h-0 flex-col p-3">
                         <div
                           aria-hidden
                           className="absolute inset-3 rounded-[1.35rem] border border-border"
                         />
-                        <TrackCardContent card={card} />
+                        <TrackCardFace
+                          card={card}
+                          headerRight={`card ${card.slot}`}
+                          stopTitleClickPropagation
+                        />
                       </CardContent>
                     </Card>
                   </div>
@@ -164,56 +162,6 @@ function getStackCardStyle(
   }
 }
 
-function TrackCardContent({ card }: TrackCardContentProps): JSX.Element {
-  return (
-    <>
-      <div className="relative flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <p className="text-muted-foreground text-[0.65rem] uppercase tracking-[0.28em]">
-            {rarityCopy[card.rarity]}
-          </p>
-          <p className="text-muted-foreground text-[0.65rem] uppercase tracking-[0.28em]">
-            card {card.slot}
-          </p>
-        </div>
-        <p className="text-muted-foreground text-[0.65rem] uppercase tracking-[0.28em]">
-          fm
-        </p>
-      </div>
-      <div className="relative flex flex-1 flex-col justify-center gap-4 py-4">
-        <a
-          href={card.lastFmUrl}
-          target="_blank"
-          rel="noreferrer"
-          onClick={(event) => event.stopPropagation()}
-          onKeyDown={(event) => event.stopPropagation()}
-          className="block text-3xl font-semibold tracking-tight underline-offset-4 hover:underline focus:underline focus:outline-none"
-        >
-          {card.title}
-        </a>
-        <p className="text-muted-foreground text-sm uppercase tracking-[0.18em]">
-          {card.artist}
-        </p>
-        {card.album ? (
-          <p className="text-muted-foreground text-sm">{card.album}</p>
-        ) : null}
-      </div>
-      <div className="relative space-y-2 text-sm">
-        <p>{formatCount(card.listeners)} listeners</p>
-        <p>{formatCount(card.playcount)} plays</p>
-        {card.playListenerRatio !== undefined ? (
-          <p>{formatRatio(card.playListenerRatio)} plays/listener</p>
-        ) : null}
-        {card.artistGenres?.length ? (
-          <p className="text-muted-foreground">
-            {formatGenres(card.artistGenres)}
-          </p>
-        ) : null}
-      </div>
-    </>
-  )
-}
-
 function ArrowButton({
   className,
   direction,
@@ -237,22 +185,4 @@ function ArrowButton({
       )}
     </button>
   )
-}
-
-function formatCount(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  }).format(value)
-}
-
-function formatGenres(genres: string[]): string {
-  return genres.slice(0, 3).join(' · ')
-}
-
-function formatRatio(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
-  }).format(value)
 }

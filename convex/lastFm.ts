@@ -25,6 +25,14 @@ export type LastFmTrackInfo = {
     duration?: string
     album?: {
       title?: string
+      image?: Array<{
+        '#text'?: string
+        size?: string
+      }>
+    }
+    wiki?: {
+      published?: string
+      summary?: string
     }
   }
 }

@@ -1,13 +1,12 @@
-import { v } from 'convex/values'
-import { action, query } from './_generated/server'
-import type { ActionCtx, QueryCtx } from './_generated/server'
+import { action } from './_generated/server'
 import { internal } from './_generated/api'
-import { packValidator } from './packModel'
-import type { PackCard, PackRarity, StoredPack } from './packModel'
+import { openedPackValidator } from './packModel'
+import type { OpenedPack, PackCard, PackRarity } from './packModel'
 import { fetchArtistGenres, fetchTrackInfo, lastFmError } from './lastFm'
-import type { LastFmTrack } from './lastFm'
+import type { LastFmTrack, LastFmTrackInfo } from './lastFm'
 import { PACK_TAGS } from './packTags'
 import type { PackTag } from './packTags'
+import { getViewerSnapshot } from './userModel'
 
 const PACK_SIZE = 5
 
@@ -103,23 +102,6 @@ const quantile = (values: number[], ratio: number) => {
   return values[index] ?? 0
 }
 
-const getOwnerKey = async (
-  ctx: Pick<ActionCtx | QueryCtx, 'auth'>,
-  guestSessionId: string | undefined,
-) => {
-  const identity = await ctx.auth.getUserIdentity()
-
-  if (identity) {
-    return `user:${identity.subject}`
-  }
-
-  if (!guestSessionId) {
-    throw new Error('Guest session required')
-  }
-
-  return `guest:${guestSessionId}`
-}
-
 const dedupePool = (entries: TrackPoolEntry[]) => {
   const seen = new Set<string>()
   const deduped: TrackPoolEntry[] = []
@@ -146,6 +128,37 @@ function calculatePlayListenerRatio(
   }
 
   return playcount / listeners
+}
+
+function getTrackImageUrl(data: LastFmTrackInfo['track']): string | undefined {
+  const image = data?.album?.image?.find((entry) => entry.size === 'extralarge')
+  const imageUrl = image?.['#text']?.trim()
+
+  if (!imageUrl) {
+    return undefined
+  }
+
+  return imageUrl
+}
+
+function getTrackWikiSummary(
+  data: LastFmTrackInfo['track'],
+): string | undefined {
+  const summary = data?.wiki?.summary?.trim()
+  if (!summary) {
+    return undefined
+  }
+
+  const sanitizedSummary = summary
+    .replace(/<a\b[^>]*>[\s\S]*?<\/a>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .trim()
+
+  if (!sanitizedSummary) {
+    return undefined
+  }
+
+  return sanitizedSummary
 }
 
 async function buildArtistGenresMap(
@@ -334,6 +347,9 @@ const pickCards = async (apiKey: string) => {
         listeners,
         playcount,
         playListenerRatio,
+        imageUrl: getTrackImageUrl(data.track),
+        publishedAt: data.track?.wiki?.published?.trim(),
+        wikiSummary: getTrackWikiSummary(data.track),
         durationMs: durationMs > 0 ? durationMs : undefined,
         sourceTag: entry.sourceTag,
         rarity: assignRarity(entry, thresholds),
@@ -347,44 +363,27 @@ const pickCards = async (apiKey: string) => {
   }
 }
 
-export const listRecent = query({
-  args: {
-    guestSessionId: v.optional(v.string()),
-  },
-  returns: v.array(packValidator),
-  handler: async (ctx, args) => {
-    const resolvedOwnerKey = await getOwnerKey(ctx, args.guestSessionId)
-    const packs = await ctx.db
-      .query('packOpens')
-      .withIndex('by_owner_opened_at', (q) => q.eq('ownerKey', resolvedOwnerKey))
-      .order('desc')
-      .take(6)
-
-    return packs.map(({ ownerKey, openedAt, themeTag, cards }) => ({
-      ownerKey,
-      openedAt,
-      themeTag,
-      cards,
-    }))
-  },
-})
-
 export const openPack = action({
-  args: {
-    guestSessionId: v.optional(v.string()),
-  },
-  returns: packValidator,
-  handler: async (ctx, args): Promise<StoredPack> => {
+  args: {},
+  returns: openedPackValidator,
+  handler: async (ctx): Promise<OpenedPack> => {
     const apiKey = readLastFmApiKey()
-    const openedAt = Date.now()
+    const identity = await ctx.auth.getUserIdentity()
     const { cards, themeTag } = await pickCards(apiKey)
-    const resolvedOwnerKey = await getOwnerKey(ctx, args.guestSessionId)
 
-    return await ctx.runMutation(internal.packWrites.storeOpenedPack, {
-      ownerKey: resolvedOwnerKey,
-      openedAt,
+    if (identity) {
+      await ctx.runMutation(
+        internal.collectionWrites.storeOpenedPackForViewer,
+        {
+          viewer: getViewerSnapshot(identity),
+          cards,
+        },
+      )
+    }
+
+    return {
       themeTag,
       cards,
-    })
+    }
   },
 })
