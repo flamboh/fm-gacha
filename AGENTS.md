@@ -30,6 +30,10 @@ Long term maintainability is a core priority. If you add new functionality, firs
 - `convex/`: Contains all backend services and functions routed through Convex. Serving articles, images, and auth for example
 - `src/`: TanStack Start + React UI and site structure.
 
+## Expectations
+
+- Use shadcn for base components `bunx --bun shadcn@latest add {component}`
+
 ## References
 
 - Convex code demos: ~/Code/oss/convex-demos
