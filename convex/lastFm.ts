@@ -20,6 +20,8 @@ export type LastFmTrackInfo = {
   track?: {
     name?: string
     url?: string
+    listeners?: string
+    playcount?: string
     duration?: string
     album?: {
       title?: string
@@ -46,11 +48,11 @@ type LastFmErrorConfig = {
   apiMessage: string
 }
 
-export const lastFmError = (
+export function lastFmError(
   code: string,
   message: string,
   extra?: Record<string, string | number>,
-): never => {
+): never {
   throw new ConvexError({
     code,
     message,
@@ -58,12 +60,12 @@ export const lastFmError = (
   })
 }
 
-const fetchLastFm = async <T extends LastFmErrorResponse>(
+async function fetchLastFm<T extends LastFmErrorResponse>(
   apiKey: string,
   method: string,
   params: Record<string, string>,
   errorConfig: LastFmErrorConfig,
-) => {
+): Promise<T> {
   const url = new URL(LASTFM_API_URL)
   url.searchParams.set('method', method)
   url.searchParams.set('api_key', apiKey)
@@ -90,9 +92,11 @@ const fetchLastFm = async <T extends LastFmErrorResponse>(
   return data
 }
 
-const normalizeGenre = (genre: string) => genre.trim().toLowerCase()
+function normalizeGenre(genre: string): string {
+  return genre.trim().toLowerCase()
+}
 
-const dedupeGenres = (genres: string[]) => {
+function dedupeGenres(genres: string[]): string[] {
   const seen = new Set<string>()
   const deduped: string[] = []
 
@@ -109,12 +113,12 @@ const dedupeGenres = (genres: string[]) => {
   return deduped
 }
 
-export const fetchTrackInfo = async (
+export async function fetchTrackInfo(
   apiKey: string,
   artist: string,
   track: string,
-) =>
-  fetchLastFm<LastFmTrackInfoResponse>(
+): Promise<LastFmTrackInfo> {
+  return fetchLastFm<LastFmTrackInfoResponse>(
     apiKey,
     'track.getInfo',
     {
@@ -129,8 +133,12 @@ export const fetchTrackInfo = async (
       apiMessage: 'Track metadata fetch failed',
     },
   )
+}
 
-export const fetchArtistGenres = async (apiKey: string, artist: string) => {
+export async function fetchArtistGenres(
+  apiKey: string,
+  artist: string,
+): Promise<string[]> {
   const data = await fetchLastFm<LastFmArtistTopTagsResponse>(
     apiKey,
     'artist.getTopTags',

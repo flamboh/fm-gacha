@@ -71,7 +71,7 @@ const readLastFmApiKey = (): string => {
     )
   }
 
-  return apiKey as string
+  return apiKey
 }
 
 const assignRarity = (
@@ -117,6 +117,37 @@ const dedupePool = (entries: TrackPoolEntry[]) => {
   }
 
   return deduped
+}
+
+function calculatePlayListenerRatio(
+  playcount: number,
+  listeners: number,
+): number | undefined {
+  if (listeners === 0) {
+    return undefined
+  }
+
+  return playcount / listeners
+}
+
+async function buildArtistGenresMap(
+  apiKey: string,
+  entries: TrackPoolEntry[],
+): Promise<Map<string, string[]>> {
+  const uniqueArtists = Array.from(
+    new Set(entries.map((entry) => entry.artist)),
+  )
+
+  return new Map<string, string[]>(
+    await Promise.all(
+      uniqueArtists.map(
+        async (artist): Promise<readonly [string, string[]]> => [
+          artist,
+          await fetchArtistGenres(apiKey, artist),
+        ],
+      ),
+    ),
+  )
 }
 
 const pickCards = async (apiKey: string) => {
@@ -263,25 +294,17 @@ const pickCards = async (apiKey: string) => {
     lastFmError('PACK_ASSEMBLY_FAILED', 'Could not assemble five unique tracks')
   }
 
-  const uniqueArtists = Array.from(
-    new Set(toppedUp.slice(0, PACK_SIZE).map((entry) => entry.artist)),
-  )
-  const artistGenres = new Map<string, string[]>(
-    await Promise.all(
-      uniqueArtists.map(
-        async (artist): Promise<readonly [string, string[]]> => [
-          artist,
-          await fetchArtistGenres(apiKey, artist),
-        ],
-      ),
-    ),
-  )
+  const selectedEntries = toppedUp.slice(0, PACK_SIZE)
+  const artistGenres = await buildArtistGenresMap(apiKey, selectedEntries)
 
   const enriched = await Promise.all(
-    toppedUp.slice(0, PACK_SIZE).map(async (entry, index) => {
+    selectedEntries.map(async (entry, index) => {
       const data = await fetchTrackInfo(apiKey, entry.artist, entry.title)
 
+      const listeners = parseCount(data.track?.listeners)
+      const playcount = parseCount(data.track?.playcount)
       const durationMs = parseCount(data.track?.duration)
+      const playListenerRatio = calculatePlayListenerRatio(playcount, listeners)
 
       return {
         slot: index + 1,
@@ -290,8 +313,9 @@ const pickCards = async (apiKey: string) => {
         artistGenres: artistGenres.get(entry.artist),
         album: data.track?.album?.title,
         lastFmUrl: data.track?.url ?? entry.lastFmUrl,
-        listeners: entry.listeners,
-        playcount: entry.playcount,
+        listeners,
+        playcount,
+        playListenerRatio,
         durationMs: durationMs > 0 ? durationMs : undefined,
         sourceTag: entry.sourceTag,
         rarity: assignRarity(entry, thresholds),

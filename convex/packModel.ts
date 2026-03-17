@@ -16,6 +16,7 @@ export const packCardValidator = v.object({
   lastFmUrl: v.string(),
   listeners: v.number(),
   playcount: v.number(),
+  playListenerRatio: v.optional(v.number()),
   durationMs: v.optional(v.number()),
   sourceTag: v.string(),
   rarity: rarityValidator,
@@ -41,6 +42,7 @@ export type PackCard = {
   lastFmUrl: string
   listeners: number
   playcount: number
+  playListenerRatio?: number
   durationMs?: number
   sourceTag: string
   rarity: PackRarity

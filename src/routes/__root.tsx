@@ -1,9 +1,15 @@
 import type { ReactNode } from 'react'
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRoute,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import ConvexProvider from '../integrations/convex-provider'
 import ClerkProvider from '../integrations/clerk-provider'
+import { SiteHeader } from '#/components/site-header'
 import appCss from '../styles.css?url'
 
 const appName = import.meta.env.VITE_APP_NAME?.trim() || 'Clerk Convex TanStack'
@@ -37,17 +43,18 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  component: RootLayout,
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]">
+      <body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)] text-balance">
         <ConvexProvider>
           <ClerkProvider>
             {children}
@@ -69,5 +76,14 @@ function RootDocument({ children }: { children: ReactNode }) {
         <Scripts />
       </body>
     </html>
+  )
+}
+
+function RootLayout() {
+  return (
+    <>
+      <SiteHeader />
+      <Outlet />
+    </>
   )
 }
