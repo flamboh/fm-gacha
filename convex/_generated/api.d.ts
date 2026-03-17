@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as lastFm from "../lastFm.js";
 import type * as packModel from "../packModel.js";
 import type * as packTags from "../packTags.js";
@@ -21,6 +22,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   lastFm: typeof lastFm;
   packModel: typeof packModel;
   packTags: typeof packTags;

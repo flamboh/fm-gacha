@@ -11,7 +11,6 @@ Lean base repo for projects that want:
 Starter behavior:
 
 - Near-blank landing page
-- Convex + Clerk optional until env vars exist
 - Minimal header with auth entry point
 - Verification scripts aligned with repo requirements
 
@@ -25,14 +24,13 @@ bun run dev
 
 ## Env
 
-Only `VITE_APP_NAME` and `VITE_APP_DESCRIPTION` matter for the default shell.
+Required:
 
-Convex and Clerk are optional:
-
-- add `CONVEX_DEPLOYMENT` + `VITE_CONVEX_URL` when you want realtime/backend
-- add `VITE_CLERK_PUBLISHABLE_KEY` + `CLERK_SECRET_KEY` when you want auth
-
-Without those vars, the app still boots cleanly.
+- `CONVEX_DEPLOYMENT`
+- `VITE_CONVEX_URL`
+- `VITE_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+- `CLERK_FRONTEND_API_URL`
 
 ## Scripts
 
@@ -48,7 +46,7 @@ bun run typecheck
 
 ```text
 src/routes/          route files
-src/integrations/    optional stack providers
+src/lib/             shared client modules
 convex/              backend functions and schema
 ```
 

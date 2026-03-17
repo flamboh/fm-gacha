@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { JSX } from 'react'
-import { useUser } from '@clerk/clerk-react'
+import { useUser } from '@clerk/tanstack-react-start'
 import { createFileRoute, useHydrated } from '@tanstack/react-router'
 import { useAction } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -8,7 +8,7 @@ import { PackCarousel } from '#/components/pack-carousel'
 import type { PackCarouselCard } from '#/components/pack-carousel'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
-import { createOwnerKey } from '#/lib/pack-session'
+import { getGuestSessionId } from '#/lib/pack-session'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -39,7 +39,6 @@ function HomePage(): JSX.Element {
   const { user } = useUser()
   const isHydrated = useHydrated()
   const openPack = useAction(api.packs.openPack)
-  const [ownerKey, setOwnerKey] = useState<string | null>(null)
   const [activePack, setActivePack] = useState<OpenedPack | null>(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [transitioningFromIndex, setTransitioningFromIndex] = useState<
@@ -53,11 +52,6 @@ function HomePage(): JSX.Element {
     previousSelectedIndexRef.current = index
     setTransitioningFromIndex(null)
   }
-
-  useEffect(() => {
-    if (!isHydrated) return
-    setOwnerKey(createOwnerKey(user?.id))
-  }, [isHydrated, user?.id])
 
   useEffect(() => {
     if (!activePack) {
@@ -79,13 +73,15 @@ function HomePage(): JSX.Element {
   }, [activePack, selectedIndex])
 
   async function handleOpenPack(): Promise<void> {
-    if (!ownerKey || isOpening) return
+    if (!isHydrated || isOpening) return
 
     setErrorMessage(null)
     setIsOpening(true)
 
     try {
-      const openedPack = await openPack({ ownerKey })
+      const openedPack = await openPack({
+        guestSessionId: user ? undefined : getGuestSessionId(),
+      })
       setActivePack(openedPack)
       setSelectedIndex(0)
       resetTransitionState(0)
@@ -115,7 +111,7 @@ function HomePage(): JSX.Element {
   }
 
   const isPackReady = activePack !== null
-  const isOpenPackDisabled = !isHydrated || !ownerKey || isOpening
+  const isOpenPackDisabled = !isHydrated || isOpening
   const canShowPrevious = selectedIndex > 0
   const canShowNext =
     activePack !== null && selectedIndex < activePack.cards.length - 1

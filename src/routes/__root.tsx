@@ -7,10 +7,11 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import ConvexProvider from '../integrations/convex-provider'
-import ClerkProvider from '../integrations/clerk-provider'
-import { SiteHeader } from '#/components/site-header'
+import { ClerkProvider } from '@clerk/tanstack-react-start'
 import appCss from '../styles.css?url'
+import { ConvexClientProvider } from '#/lib/convex'
+import { appEnv } from '#/lib/env'
+import { SiteHeader } from '#/components/site-header'
 
 const appName = import.meta.env.VITE_APP_NAME?.trim() || 'Clerk Convex TanStack'
 const appDescription =
@@ -43,47 +44,61 @@ export const Route = createRootRoute({
       },
     ],
   }),
-  component: RootLayout,
-  shellComponent: RootDocument,
+  component: RootComponent,
 })
+
+function RootComponent() {
+  return (
+    <AppShell>
+      <Outlet />
+    </AppShell>
+  )
+}
+
+function AppShell({ children }: { children: ReactNode }) {
+  const publishableKey = appEnv.clerkPublishableKey
+
+  if (!publishableKey) {
+    throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY')
+  }
+
+  return (
+    <ClerkProvider publishableKey={publishableKey}>
+      <RootDocument>{children}</RootDocument>
+    </ClerkProvider>
+  )
+}
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)] text-balance">
-        <ConvexProvider>
-          <ClerkProvider>
-            {children}
-            {import.meta.env.DEV ? (
-              <TanStackDevtools
-                config={{
-                  position: 'bottom-right',
-                }}
-                plugins={[
-                  {
-                    name: 'Tanstack Router',
-                    render: <TanStackRouterDevtoolsPanel />,
-                  },
-                ]}
-              />
-            ) : null}
-          </ClerkProvider>
-        </ConvexProvider>
+      <body
+        className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)] text-balance h-full"
+        suppressHydrationWarning
+      >
+        <ConvexClientProvider>
+          <SiteHeader />
+          {children}
+          {import.meta.env.DEV ? (
+            <TanStackDevtools
+              config={{
+                position: 'bottom-right',
+              }}
+              plugins={[
+                {
+                  name: 'Tanstack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+              ]}
+            />
+          ) : null}
+        </ConvexClientProvider>
         <Scripts />
       </body>
     </html>
-  )
-}
-
-function RootLayout() {
-  return (
-    <>
-      <SiteHeader />
-      <Outlet />
-    </>
   )
 }

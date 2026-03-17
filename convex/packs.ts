@@ -1,5 +1,6 @@
 import { v } from 'convex/values'
 import { action, query } from './_generated/server'
+import type { ActionCtx, QueryCtx } from './_generated/server'
 import { internal } from './_generated/api'
 import { packValidator } from './packModel'
 import type { PackCard, PackRarity, StoredPack } from './packModel'
@@ -100,6 +101,23 @@ const quantile = (values: number[], ratio: number) => {
     Math.max(0, Math.floor((values.length - 1) * ratio)),
   )
   return values[index] ?? 0
+}
+
+const getOwnerKey = async (
+  ctx: Pick<ActionCtx | QueryCtx, 'auth'>,
+  guestSessionId: string | undefined,
+) => {
+  const identity = await ctx.auth.getUserIdentity()
+
+  if (identity) {
+    return `user:${identity.subject}`
+  }
+
+  if (!guestSessionId) {
+    throw new Error('Guest session required')
+  }
+
+  return `guest:${guestSessionId}`
 }
 
 const dedupePool = (entries: TrackPoolEntry[]) => {
@@ -331,13 +349,14 @@ const pickCards = async (apiKey: string) => {
 
 export const listRecent = query({
   args: {
-    ownerKey: v.string(),
+    guestSessionId: v.optional(v.string()),
   },
   returns: v.array(packValidator),
   handler: async (ctx, args) => {
+    const resolvedOwnerKey = await getOwnerKey(ctx, args.guestSessionId)
     const packs = await ctx.db
       .query('packOpens')
-      .withIndex('by_owner_opened_at', (q) => q.eq('ownerKey', args.ownerKey))
+      .withIndex('by_owner_opened_at', (q) => q.eq('ownerKey', resolvedOwnerKey))
       .order('desc')
       .take(6)
 
@@ -352,16 +371,17 @@ export const listRecent = query({
 
 export const openPack = action({
   args: {
-    ownerKey: v.string(),
+    guestSessionId: v.optional(v.string()),
   },
   returns: packValidator,
   handler: async (ctx, args): Promise<StoredPack> => {
     const apiKey = readLastFmApiKey()
     const openedAt = Date.now()
     const { cards, themeTag } = await pickCards(apiKey)
+    const resolvedOwnerKey = await getOwnerKey(ctx, args.guestSessionId)
 
     return await ctx.runMutation(internal.packWrites.storeOpenedPack, {
-      ownerKey: args.ownerKey,
+      ownerKey: resolvedOwnerKey,
       openedAt,
       themeTag,
       cards,
