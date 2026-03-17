@@ -40,19 +40,19 @@ export function TrackCardFace({
   return (
     <div
       className={cn(
-        'relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.35rem] border border-border/70 bg-card',
+        'relative flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card',
         className,
       )}
     >
-      <div className="border-b border-border/70 bg-accent/35 px-4 py-3">
+      <div className="border-b border-border/70 bg-accent/35 px-3 py-2">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-1">
-            <p className="text-muted-foreground text-[0.65rem] uppercase tracking-[0.28em]">
+          <div className="min-w-0 space-y-0.5">
+            <p className="text-muted-foreground text-[0.55rem] uppercase tracking-[0.28em]">
               {rarityCopy[card.rarity]}
             </p>
-            <p className="truncate text-sm font-semibold">{card.title}</p>
+            <p className="truncate text-xs font-semibold">{card.title}</p>
           </div>
-          <p className="text-muted-foreground shrink-0 text-[0.65rem] uppercase tracking-[0.28em]">
+          <p className="text-muted-foreground shrink-0 text-[0.55rem] uppercase tracking-[0.28em]">
             {headerRight}
           </p>
         </div>
@@ -67,7 +67,7 @@ export function TrackCardFace({
           />
         ) : null}
         <div className="absolute inset-0 bg-background/70" />
-        <div className="relative flex h-full w-full flex-col justify-end gap-3 p-4">
+        <div className="relative flex h-full w-full flex-col justify-end gap-1.5 p-3">
           <a
             href={card.lastFmUrl}
             target="_blank"
@@ -82,31 +82,35 @@ export function TrackCardFace({
                 ? (event) => event.stopPropagation()
                 : undefined
             }
-            className="line-clamp-3 text-[2rem] leading-none font-semibold tracking-tight text-balance underline-offset-4 hover:underline focus:underline focus:outline-none"
+            className="line-clamp-2 text-lg leading-tight font-semibold tracking-tight text-balance underline-offset-4 hover:underline focus:underline focus:outline-none"
           >
             {card.title}
           </a>
-          <div className="space-y-1">
-            <p className="text-muted-foreground text-xs uppercase tracking-[0.22em]">
+          <div className="space-y-0.5">
+            <p className="text-muted-foreground text-[0.65rem] uppercase tracking-[0.22em]">
               {card.artist}
             </p>
             {card.album ? (
-              <p className="text-muted-foreground text-sm">{card.album}</p>
+              <p className="text-muted-foreground text-xs truncate">
+                {card.album}
+              </p>
             ) : null}
           </div>
         </div>
       </div>
 
-      <div className="space-y-2 border-b border-border/70 px-4 py-3">
-        <div className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-[0.65rem] uppercase tracking-[0.22em]">
+      <div className="space-y-1.5 border-b border-border/70 px-3 py-2">
+        <div className="text-muted-foreground flex flex-wrap gap-x-2 gap-y-1 text-[0.55rem] uppercase tracking-[0.22em]">
           <span>{card.sourceTag}</span>
           {card.publishedAt ? <span>{card.publishedAt}</span> : null}
         </div>
         {card.wikiSummary ? (
-          <p className="line-clamp-5 text-sm leading-6">{card.wikiSummary}</p>
+          <p className="line-clamp-2 text-xs leading-relaxed">
+            {card.wikiSummary}
+          </p>
         ) : null}
         {card.artistGenres?.length ? (
-          <p className="text-muted-foreground line-clamp-1 text-xs uppercase tracking-[0.18em]">
+          <p className="text-muted-foreground line-clamp-1 text-[0.6rem] uppercase tracking-[0.18em]">
             {card.artistGenres.slice(0, 3).join(' · ')}
           </p>
         ) : null}
@@ -127,11 +131,11 @@ type StatBlockProps = {
 
 function StatBlock({ label, value }: StatBlockProps): JSX.Element {
   return (
-    <div className="space-y-1 px-4 py-3 text-center">
-      <p className="text-muted-foreground text-[0.65rem] uppercase tracking-[0.28em]">
+    <div className="space-y-1 px-3 py-2 text-center">
+      <p className="text-muted-foreground text-[0.55rem] uppercase tracking-[0.28em]">
         {label}
       </p>
-      <p className="text-2xl leading-none font-semibold tracking-tight tabular-nums">
+      <p className="text-lg leading-none font-semibold tracking-tight tabular-nums">
         {value}
       </p>
     </div>

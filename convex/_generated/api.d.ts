@@ -13,6 +13,7 @@ import type * as collection from "../collection.js";
 import type * as collectionModel from "../collectionModel.js";
 import type * as collectionWrites from "../collectionWrites.js";
 import type * as lastFm from "../lastFm.js";
+import type * as migrations from "../migrations.js";
 import type * as packModel from "../packModel.js";
 import type * as packTags from "../packTags.js";
 import type * as packs from "../packs.js";
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   collectionModel: typeof collectionModel;
   collectionWrites: typeof collectionWrites;
   lastFm: typeof lastFm;
+  migrations: typeof migrations;
   packModel: typeof packModel;
   packTags: typeof packTags;
   packs: typeof packs;

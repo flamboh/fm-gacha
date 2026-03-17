@@ -35,6 +35,7 @@ export const userCollectionEntryFields = {
   copyCount: v.number(),
   firstCollectedAt: v.number(),
   lastCollectedAt: v.number(),
+  favorite: v.optional(v.boolean()),
   artistSort: v.string(),
   titleSort: v.string(),
   rarity: rarityValidator,

@@ -92,6 +92,7 @@ export async function storePackForViewer(
         copyCount: 1,
         firstCollectedAt: collectedAt,
         lastCollectedAt: collectedAt,
+        favorite: false,
         artistSort: getArtistSortValue(card.artist),
         titleSort: getTitleSortValue(card.title),
         rarity: card.rarity,
