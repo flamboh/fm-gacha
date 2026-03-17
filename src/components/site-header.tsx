@@ -1,9 +1,9 @@
 import { Link } from '@tanstack/react-router'
 
 const navLinkClass =
-  'text-muted-foreground hover:text-foreground focus-visible:ring-ring rounded-md px-4 py-2 text-sm uppercase tracking-[0.24em] transition-colors outline-none focus-visible:ring-2'
+  'text-muted-foreground hover:text-foreground border border-transparent focus-visible:ring-ring rounded-md px-4 py-2 text-sm uppercase tracking-[0.24em] transition-colors outline-none focus-visible:ring-2'
 const activeNavLinkClass =
-  'bg-accent text-accent-foreground border-border shadow-xs border'
+  'bg-accent text-accent-foreground border-border shadow-xs'
 
 export function SiteHeader() {
   return (
@@ -14,6 +14,7 @@ export function SiteHeader() {
       >
         <Link
           to="/"
+          activeOptions={{ exact: true }}
           className={navLinkClass}
           activeProps={{
             className: `${navLinkClass} ${activeNavLinkClass}`,
