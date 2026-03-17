@@ -8,21 +8,21 @@
  * @module
  */
 
-import type * as packModel from "../packModel.js";
-import type * as packWrites from "../packWrites.js";
-import type * as packs from "../packs.js";
+import type * as packModel from '../packModel.js'
+import type * as packWrites from '../packWrites.js'
+import type * as packs from '../packs.js'
 
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
-} from "convex/server";
+} from 'convex/server'
 
 declare const fullApi: ApiFromModules<{
-  packModel: typeof packModel;
-  packWrites: typeof packWrites;
-  packs: typeof packs;
-}>;
+  packModel: typeof packModel
+  packWrites: typeof packWrites
+  packs: typeof packs
+}>
 
 /**
  * A utility for referencing Convex functions in your app's public API.
@@ -34,8 +34,8 @@ declare const fullApi: ApiFromModules<{
  */
 export declare const api: FilterApi<
   typeof fullApi,
-  FunctionReference<any, "public">
->;
+  FunctionReference<any, 'public'>
+>
 
 /**
  * A utility for referencing Convex functions in your app's internal API.
@@ -47,7 +47,7 @@ export declare const api: FilterApi<
  */
 export declare const internal: FilterApi<
   typeof fullApi,
-  FunctionReference<any, "internal">
->;
+  FunctionReference<any, 'internal'>
+>
 
-export declare const components: {};
+export declare const components: {}
