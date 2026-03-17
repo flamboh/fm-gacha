@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useUser } from '@clerk/clerk-react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useHydrated } from '@tanstack/react-router'
 import { useAction } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { Button } from '#/components/ui/button'
@@ -42,6 +42,7 @@ const rarityCopy: Record<Rarity, string> = {
 
 function HomePage() {
   const { user } = useUser()
+  const isHydrated = useHydrated()
   const openPack = useAction(api.packs.openPack)
   const [ownerKey, setOwnerKey] = useState<string | null>(null)
   const [activePack, setActivePack] = useState<OpenedPack | null>(null)
@@ -50,8 +51,12 @@ function HomePage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!isHydrated) {
+      return
+    }
+
     setOwnerKey(createOwnerKey(user?.id))
-  }, [user?.id])
+  }, [isHydrated, user?.id])
 
   const handleOpenPack = async () => {
     if (!ownerKey || isOpening) {
@@ -90,6 +95,7 @@ function HomePage() {
   const isPackReady = activePack !== null
   const isComplete =
     activePack !== null && revealedCount === activePack.cards.length
+  const isOpenPackDisabled = !isHydrated || !ownerKey || isOpening
 
   return (
     <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-6">
@@ -97,7 +103,7 @@ function HomePage() {
         {!isPackReady ? (
           <Button
             onClick={handleOpenPack}
-            disabled={!ownerKey || isOpening}
+            disabled={isOpenPackDisabled}
             size="lg"
             className="h-14 w-full"
           >

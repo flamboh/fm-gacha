@@ -9,6 +9,7 @@
  */
 
 import type * as packModel from "../packModel.js";
+import type * as packTags from "../packTags.js";
 import type * as packWrites from "../packWrites.js";
 import type * as packs from "../packs.js";
 
@@ -20,6 +21,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   packModel: typeof packModel;
+  packTags: typeof packTags;
   packWrites: typeof packWrites;
   packs: typeof packs;
 }>;
