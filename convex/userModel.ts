@@ -12,6 +12,7 @@ export const viewerSnapshotValidator = v.object(viewerSnapshotFields)
 
 export const userFields = {
   ...viewerSnapshotFields,
+  lastFmUsername: v.optional(v.string()),
   createdAt: v.number(),
   updatedAt: v.number(),
 }

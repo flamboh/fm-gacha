@@ -128,17 +128,14 @@ function CollectionPage(): JSX.Element {
               className="collection-enter space-y-3"
               style={{ animationDelay: '40ms' }}
             >
-              <p className="text-muted-foreground text-xs uppercase tracking-[0.28em]">
-                Collection
-              </p>
               <h1 className="text-3xl uppercase tracking-[0.16em] text-balance">
-                Library
+                Collection
               </h1>
               <div className="flex flex-wrap gap-2 text-sm">
                 {summaryItems.map((item, index) => (
                   <span
                     key={item.label}
-                    className="collection-enter text-muted-foreground inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-3 py-1.5 shadow-[0_10px_24px_-20px_rgba(0,0,0,0.9)] tabular-nums"
+                    className="collection-enter text-muted-foreground inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-3 tabular-nums"
                     style={{ animationDelay: `${120 + index * 60}ms` }}
                   >
                     <span className="text-foreground text-base leading-none font-semibold">
@@ -252,9 +249,12 @@ function CollectionPage(): JSX.Element {
                   <motion.div
                     layoutId={`card-${entry._id}`}
                     transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+                    style={
+                      inspectedCardId === entry._id ? { opacity: 0 } : undefined
+                    }
                     className="h-full"
                   >
-                    <Card className="bg-card text-card-foreground overflow-hidden rounded-[1.5rem] border border-border/70 py-0 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)] transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:-translate-y-1 hover:border-ring/35 hover:shadow-[0_26px_54px_-28px_rgba(0,0,0,0.82)] aspect-2/3 h-full">
+                    <Card className="bg-card text-card-foreground overflow-hidden rounded-[1.5rem] border border-border/70 py-0 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)] transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:-translate-y-1 hover:border-ring/35 hover:shadow-[0_26px_54px_-28px_rgba(0,0,0,0.82)] aspect-[2/3] h-full">
                       <CardContent className="p-2 h-full">
                         <TrackCardFace
                           card={entry}
@@ -301,14 +301,21 @@ function CollectionPage(): JSX.Element {
                     transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
                     className="w-full max-w-sm pointer-events-auto outline-none"
                   >
-                    <Card className="bg-card text-card-foreground overflow-hidden rounded-[2.1rem] border border-border/70 py-0 shadow-[0_26px_54px_-28px_rgba(0,0,0,0.82)] aspect-2/3 h-full">
-                      <CardContent className="p-3 h-full">
-                        <TrackCardFace
-                          card={inspectedCard}
-                          headerRight={`x${inspectedCard.copyCount}`}
-                        />
-                      </CardContent>
-                    </Card>
+                    <a
+                      href={inspectedCard.lastFmUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="cursor-pointer block group active:scale-[0.98] transition-transform duration-200 h-full"
+                    >
+                      <Card className="bg-card text-card-foreground overflow-hidden rounded-[2.1rem] border border-border/70 py-0 shadow-[0_26px_54px_-28px_rgba(0,0,0,0.82)] aspect-[2/3] h-full transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-hover:-translate-y-1 group-hover:border-ring/35 group-hover:shadow-[0_32px_64px_-32px_rgba(0,0,0,0.9)]">
+                        <CardContent className="p-3 h-full">
+                          <TrackCardFace
+                            card={inspectedCard}
+                            headerRight={`x${inspectedCard.copyCount}`}
+                          />
+                        </CardContent>
+                      </Card>
+                    </a>
                   </motion.div>
                 </div>
               </>

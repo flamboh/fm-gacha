@@ -1,5 +1,5 @@
 import { mutation, query } from './_generated/server'
-import { v } from 'convex/values'
+import { ConvexError, v } from 'convex/values'
 import { requireUser } from './auth'
 import { storePackForViewer } from './collectionWrites'
 import { openedPackValidator } from './packModel'
@@ -9,6 +9,8 @@ import {
   upsertUser,
   userFields,
 } from './userModel'
+
+const LASTFM_USERNAME_MAX_LENGTH = 64
 
 export const ensureViewer = mutation({
   args: {},
@@ -32,6 +34,35 @@ export const getViewer = query({
   handler: async (ctx) => {
     const identity = await requireUser(ctx)
     return await getUserByClerkId(ctx, identity.subject)
+  },
+})
+
+export const setLastFmUsername = mutation({
+  args: {
+    lastFmUsername: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const identity = await requireUser(ctx)
+    const lastFmUsername = args.lastFmUsername.trim()
+
+    if (lastFmUsername.length > LASTFM_USERNAME_MAX_LENGTH) {
+      throw new ConvexError({
+        code: 'INVALID_LASTFM_USERNAME',
+        message: 'Last.fm username too long',
+      })
+    }
+
+    const userId = await upsertUser(ctx, getViewerSnapshot(identity))
+    const nextLastFmUsername =
+      lastFmUsername.length === 0 ? undefined : lastFmUsername
+
+    await ctx.db.patch(userId, {
+      lastFmUsername: nextLastFmUsername,
+      updatedAt: Date.now(),
+    })
+
+    return null
   },
 })
 

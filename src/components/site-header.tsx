@@ -10,7 +10,7 @@ const activeNavLinkClass =
 export function SiteHeader() {
   return (
     <header className="bg-card border-accent-foreground/20 sticky top-0 z-20 border-b backdrop-blur">
-      <div className="mx-auto grid min-h-16 max-w-md grid-cols-[1fr_auto_1fr] items-center gap-3 px-6">
+      <div className="mx-auto grid min-h-16 max-w-full grid-cols-[1fr_auto_1fr] items-center gap-3 px-6">
         <div aria-hidden />
         <nav
           aria-label="Primary"
@@ -35,6 +35,17 @@ export function SiteHeader() {
           >
             Collection
           </Link>
+          <Show when="signed-in">
+            <Link
+              to="/profile"
+              className={navLinkClass}
+              activeProps={{
+                className: `${navLinkClass} ${activeNavLinkClass}`,
+              }}
+            >
+              Profile
+            </Link>
+          </Show>
         </nav>
         <div className="justify-self-end">
           <Show when="signed-out">
