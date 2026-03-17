@@ -161,7 +161,7 @@ function CollectionPage(): JSX.Element {
                 <DropdownMenuTrigger
                   className={cn(
                     buttonVariants({ variant: 'outline', size: 'lg' }),
-                    'bg-card border-border min-w-40 justify-between rounded-xl px-3 text-sm uppercase tracking-[0.16em] shadow-[0_10px_24px_-20px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:ring-2 focus-visible:ring-ring data-[popup-open]:border-ring/35 data-[popup-open]:shadow-[0_16px_32px_-24px_rgba(0,0,0,0.95)]',
+                    'bg-card border-border min-w-40 justify-between rounded-xl px-3 text-sm uppercase tracking-[0.16em] shadow-[0_10px_24px_-20px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:ring-2 focus-visible:ring-ring data-popup-open:border-ring/35 data-popup-open:shadow-[0_16px_32px_-24px_rgba(0,0,0,0.95)]',
                   )}
                 >
                   <span>{activeSortLabel}</span>
@@ -254,7 +254,7 @@ function CollectionPage(): JSX.Element {
                     transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
                     className="h-full"
                   >
-                    <Card className="bg-card text-card-foreground overflow-hidden rounded-[1.5rem] border border-border/70 py-0 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)] transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:-translate-y-1 hover:border-ring/35 hover:shadow-[0_26px_54px_-28px_rgba(0,0,0,0.82)] aspect-[2/3] h-full">
+                    <Card className="bg-card text-card-foreground overflow-hidden rounded-[1.5rem] border border-border/70 py-0 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)] transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:-translate-y-1 hover:border-ring/35 hover:shadow-[0_26px_54px_-28px_rgba(0,0,0,0.82)] aspect-2/3 h-full">
                       <CardContent className="p-2 h-full">
                         <TrackCardFace
                           card={entry}
@@ -301,7 +301,7 @@ function CollectionPage(): JSX.Element {
                     transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
                     className="w-full max-w-sm pointer-events-auto outline-none"
                   >
-                    <Card className="bg-card text-card-foreground overflow-hidden rounded-[2.1rem] border border-border/70 py-0 shadow-[0_26px_54px_-28px_rgba(0,0,0,0.82)] aspect-[2/3] h-full">
+                    <Card className="bg-card text-card-foreground overflow-hidden rounded-[2.1rem] border border-border/70 py-0 shadow-[0_26px_54px_-28px_rgba(0,0,0,0.82)] aspect-2/3 h-full">
                       <CardContent className="p-3 h-full">
                         <TrackCardFace
                           card={inspectedCard}
