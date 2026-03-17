@@ -21,7 +21,7 @@ This repository is WIP. Proposing sweeping changes that improve long-term mainta
 
 If a tradeoff is required, choose correctness and robustness over short-term convenience.
 
-Do not add excessive fallbacks. Errors like missing env are critical and shouldn't be masked by fallbacks. Logic should be simple, with reasonable expecations, don't `try except` everything.
+Do not add excessive fallbacks. Errors like missing env are critical and shouldn't be masked by fallbacks. Logic should be simple, with reasonable expecations, don't `try except` everything. Use the smallest possible diff. Then think of how to make it smaller. Don't add helpers. Do not use fallbacks with ternaries or the || operator. No typeof checks. No backwards compatability. Smallest possible set of changes to make the instructed change work.
 
 Keep files under ~400 lines. Refactor as neeeded to meet this.
 

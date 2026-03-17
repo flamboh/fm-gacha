@@ -1,35 +1,18 @@
-import { ConvexError, v } from 'convex/values'
+import { v } from 'convex/values'
 import { action, query } from './_generated/server'
 import { internal } from './_generated/api'
 import { packValidator } from './packModel'
 import type { PackCard, PackRarity, StoredPack } from './packModel'
+import { fetchArtistGenres, fetchTrackInfo, lastFmError } from './lastFm'
+import type { LastFmTrack } from './lastFm'
 import { PACK_TAGS } from './packTags'
 import type { PackTag } from './packTags'
 
 const PACK_SIZE = 5
 
-type LastFmTrack = {
-  name: string
-  playcount?: string
-  listeners?: string
-  url: string
-  artist?: { name?: string } | string
-}
-
-type LastFmTrackInfo = {
-  track?: {
-    name?: string
-    url?: string
-    duration?: string
-    album?: {
-      title?: string
-    }
-  }
-}
-
 type TrackPoolEntry = Omit<
   PackCard,
-  'slot' | 'album' | 'durationMs' | 'rarity'
+  'slot' | 'artistGenres' | 'album' | 'durationMs' | 'rarity'
 > & {
   popularity: number
 }
@@ -77,18 +60,6 @@ const sampleOne = <T>(items: readonly T[]) => {
   }
 
   return items[getRandomInt(0, items.length - 1)] ?? null
-}
-
-const lastFmError = (
-  code: string,
-  message: string,
-  extra?: Record<string, string | number>,
-): never => {
-  throw new ConvexError({
-    code,
-    message,
-    ...extra,
-  })
 }
 
 const readLastFmApiKey = (): string => {
@@ -292,35 +263,23 @@ const pickCards = async (apiKey: string) => {
     lastFmError('PACK_ASSEMBLY_FAILED', 'Could not assemble five unique tracks')
   }
 
+  const uniqueArtists = Array.from(
+    new Set(toppedUp.slice(0, PACK_SIZE).map((entry) => entry.artist)),
+  )
+  const artistGenres = new Map<string, string[]>(
+    await Promise.all(
+      uniqueArtists.map(
+        async (artist): Promise<readonly [string, string[]]> => [
+          artist,
+          await fetchArtistGenres(apiKey, artist),
+        ],
+      ),
+    ),
+  )
+
   const enriched = await Promise.all(
     toppedUp.slice(0, PACK_SIZE).map(async (entry, index) => {
-      const url = new URL('https://ws.audioscrobbler.com/2.0/')
-      url.searchParams.set('method', 'track.getInfo')
-      url.searchParams.set('artist', entry.artist)
-      url.searchParams.set('track', entry.title)
-      url.searchParams.set('autocorrect', '1')
-      url.searchParams.set('api_key', apiKey)
-      url.searchParams.set('format', 'json')
-
-      const response = await fetch(url)
-      if (!response.ok) {
-        lastFmError('TRACK_INFO_REQUEST_FAILED', 'Track metadata failed', {
-          status: response.status,
-        })
-      }
-
-      const data = (await response.json()) as LastFmTrackInfo & {
-        error?: number
-        message?: string
-      }
-
-      if (data.error) {
-        lastFmError(
-          'TRACK_INFO_API_ERROR',
-          data.message ?? 'Track metadata fetch failed',
-          { lastFmError: data.error },
-        )
-      }
+      const data = await fetchTrackInfo(apiKey, entry.artist, entry.title)
 
       const durationMs = parseCount(data.track?.duration)
 
@@ -328,6 +287,7 @@ const pickCards = async (apiKey: string) => {
         slot: index + 1,
         title: data.track?.name ?? entry.title,
         artist: entry.artist,
+        artistGenres: artistGenres.get(entry.artist),
         album: data.track?.album?.title,
         lastFmUrl: data.track?.url ?? entry.lastFmUrl,
         listeners: entry.listeners,

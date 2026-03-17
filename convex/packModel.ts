@@ -11,6 +11,7 @@ export const packCardValidator = v.object({
   slot: v.number(),
   title: v.string(),
   artist: v.string(),
+  artistGenres: v.optional(v.array(v.string())),
   album: v.optional(v.string()),
   lastFmUrl: v.string(),
   listeners: v.number(),
@@ -35,6 +36,7 @@ export type PackCard = {
   slot: number
   title: string
   artist: string
+  artistGenres?: string[]
   album?: string
   lastFmUrl: string
   listeners: number

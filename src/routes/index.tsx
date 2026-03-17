@@ -17,6 +17,7 @@ type OpenedCard = {
   slot: number
   title: string
   artist: string
+  artistGenres?: string[]
   album?: string
   lastFmUrl: string
   listeners: number
@@ -141,7 +142,11 @@ function HomePage() {
                       <div className="space-y-2 text-sm">
                         <p>{formatCount(currentCard.listeners)} listeners</p>
                         <p>{formatCount(currentCard.playcount)} plays</p>
-                        <p>{currentCard.sourceTag}</p>
+                        {currentCard.artistGenres?.length ? (
+                          <p className="text-muted-foreground">
+                            {formatGenres(currentCard.artistGenres)}
+                          </p>
+                        ) : null}
                       </div>
                     </>
                   ) : (
@@ -190,4 +195,8 @@ function formatCount(value: number) {
     notation: 'compact',
     maximumFractionDigits: 1,
   }).format(value)
+}
+
+function formatGenres(genres: string[]) {
+  return genres.slice(0, 3).join(' · ')
 }
