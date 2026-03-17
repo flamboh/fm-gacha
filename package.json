@@ -12,7 +12,7 @@
     "test": "vitest run",
     "deploy": "bun run build && wrangler deploy",
     "fmt": "prettier --write .",
-    "format": "prettier --check .",
+    "fmt:check": "prettier --check .",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check": "bun run fmt && bun run lint && bun run typecheck"
