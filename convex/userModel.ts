@@ -18,7 +18,7 @@ export const userFields = {
 
 type DbCtx = Pick<QueryCtx | MutationCtx, 'db'>
 
-type ViewerSnapshot = {
+export type ViewerSnapshot = {
   clerkId: string
   name?: string
   imageUrl?: string

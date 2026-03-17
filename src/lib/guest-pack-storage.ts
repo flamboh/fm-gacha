@@ -46,3 +46,7 @@ export function saveGuestPack(pack: StoredGuestPack, packsOpened: number) {
   window.localStorage.setItem(GUEST_PACK_STATE_KEY, JSON.stringify(nextState))
   return nextState
 }
+
+export function clearGuestPackState() {
+  window.localStorage.removeItem(GUEST_PACK_STATE_KEY)
+}

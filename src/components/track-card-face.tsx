@@ -63,7 +63,7 @@ export function TrackCardFace({
           <img
             src={card.imageUrl}
             alt={`${card.title} cover art`}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover outline outline-1 -outline-offset-1 outline-white/10"
           />
         ) : null}
         <div className="absolute inset-0 bg-background/70" />
@@ -131,7 +131,7 @@ function StatBlock({ label, value }: StatBlockProps): JSX.Element {
       <p className="text-muted-foreground text-[0.65rem] uppercase tracking-[0.28em]">
         {label}
       </p>
-      <p className="text-2xl leading-none font-semibold tracking-tight">
+      <p className="text-2xl leading-none font-semibold tracking-tight tabular-nums">
         {value}
       </p>
     </div>

@@ -1,18 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { JSX } from 'react'
-import {
-  SignUpButton,
-  useAuth,
-} from '@clerk/tanstack-react-start'
+import { SignUpButton, useAuth } from '@clerk/tanstack-react-start'
 import { createFileRoute, useHydrated } from '@tanstack/react-router'
 import { useAction } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { PackCarousel } from '#/components/pack-carousel'
 import type { PackCarouselCard } from '#/components/pack-carousel'
-import {
-  Button,
-  buttonVariants,
-} from '#/components/ui/button'
+import { Button, buttonVariants } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
 import {
   GUEST_PACK_LIMIT,
@@ -70,6 +64,15 @@ function HomePage(): JSX.Element {
     setSavedGuestPack(guestPackState.lastPack)
     setActivePack(guestPackState.lastPack)
   }, [isHydrated, isLoaded, userId])
+
+  useEffect(() => {
+    if (!userId) {
+      return
+    }
+
+    setGuestPackCount(0)
+    setSavedGuestPack(null)
+  }, [userId])
 
   useEffect(() => {
     if (!activePack) {
@@ -228,11 +231,6 @@ function HomePage(): JSX.Element {
 
         {errorMessage ? (
           <p className="text-destructive text-center text-sm">{errorMessage}</p>
-        ) : null}
-        {!userId ? (
-          <p className="text-muted-foreground text-center text-xs uppercase tracking-[0.22em]">
-            {Math.max(0, GUEST_PACK_LIMIT - guestPackCount)} guest packs left
-          </p>
         ) : null}
       </div>
     </main>

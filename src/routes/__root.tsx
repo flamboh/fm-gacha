@@ -11,6 +11,7 @@ import { ClerkProvider } from '@clerk/tanstack-react-start'
 import appCss from '../styles.css?url'
 import { ConvexClientProvider } from '#/lib/convex'
 import { appEnv } from '#/lib/env'
+import { GuestPackImporter } from '#/lib/guest-pack-importer'
 import { SiteHeader } from '#/components/site-header'
 
 const appName = import.meta.env.VITE_APP_NAME?.trim() || 'Clerk Convex TanStack'
@@ -81,6 +82,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         suppressHydrationWarning
       >
         <ConvexClientProvider>
+          <GuestPackImporter />
           <SiteHeader />
           {children}
           {import.meta.env.DEV ? (
