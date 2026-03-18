@@ -119,7 +119,9 @@ function calculatePlayListenerRatio(
 }
 
 function getTrackImageUrl(data: LastFmTrackInfo['track']): string | undefined {
-  const imageUrl = data?.album?.image?.find((entry) => entry.size === 'extralarge')?.['#text']?.trim()
+  const imageUrl = data?.album?.image
+    ?.find((entry) => entry.size === 'extralarge')
+    ?.['#text']?.trim()
   return imageUrl || undefined
 }
 
@@ -347,7 +349,10 @@ export const openPack = action({
   handler: async (ctx): Promise<OpenedPack> => {
     const apiKey = process.env.LASTFM_API_KEY?.trim()
     if (!apiKey) {
-      lastFmError('MISSING_LASTFM_API_KEY', 'Missing required env var: LASTFM_API_KEY')
+      lastFmError(
+        'MISSING_LASTFM_API_KEY',
+        'Missing required env var: LASTFM_API_KEY',
+      )
     }
     const identity = await ctx.auth.getUserIdentity()
     const { cards, themeTag } = await pickCards(apiKey)
