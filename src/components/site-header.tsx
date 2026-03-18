@@ -2,11 +2,6 @@ import { Show, SignInButton, UserButton } from '@clerk/tanstack-react-start'
 import { Link } from '@tanstack/react-router'
 import { buttonVariants } from '#/components/ui/button'
 
-const navLinkClass =
-  'text-muted-foreground hover:text-foreground border border-transparent focus-visible:ring-ring rounded-md px-4 py-2 text-sm uppercase tracking-[0.24em] transition-colors outline-none focus-visible:ring-2'
-const activeNavLinkClass =
-  'bg-accent text-accent-foreground border-border shadow-xs'
-
 export function SiteHeader() {
   return (
     <header className="bg-card border-accent-foreground/20 sticky top-0 z-20 border-b backdrop-blur">
@@ -19,29 +14,23 @@ export function SiteHeader() {
           <Link
             to="/"
             activeOptions={{ exact: true }}
-            className={navLinkClass}
-            activeProps={{
-              className: `${navLinkClass} ${activeNavLinkClass}`,
-            }}
+            className="nav-link"
+            activeProps={{ className: 'nav-link nav-link-active' }}
           >
             Gacha
           </Link>
           <Link
             to="/collection"
-            className={navLinkClass}
-            activeProps={{
-              className: `${navLinkClass} ${activeNavLinkClass}`,
-            }}
+            className="nav-link"
+            activeProps={{ className: 'nav-link nav-link-active' }}
           >
             Collection
           </Link>
           <Show when="signed-in">
             <Link
               to="/profile"
-              className={navLinkClass}
-              activeProps={{
-                className: `${navLinkClass} ${activeNavLinkClass}`,
-              }}
+              className="nav-link"
+              activeProps={{ className: 'nav-link nav-link-active' }}
             >
               Profile
             </Link>

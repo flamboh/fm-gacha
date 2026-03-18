@@ -75,7 +75,7 @@ export const collectionSummaryValidator = v.object({
 
 export type CollectionSort = 'recent' | 'artist' | 'title' | 'rarity'
 
-function normalizeCollectionValue(value: string) {
+export function normalizeCollectionValue(value: string) {
   return value.trim().toLocaleLowerCase()
 }
 
@@ -94,12 +94,4 @@ export function getRarityRank(rarity: PackRarity) {
     case 'mythic':
       return 3
   }
-}
-
-export function getArtistSortValue(artist: string) {
-  return normalizeCollectionValue(artist)
-}
-
-export function getTitleSortValue(title: string) {
-  return normalizeCollectionValue(title)
 }

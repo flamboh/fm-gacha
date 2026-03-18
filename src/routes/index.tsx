@@ -14,6 +14,13 @@ import {
   saveGuestPack,
 } from '#/lib/guest-pack-storage'
 
+function readInitialGuestPackState() {
+  if (typeof window === 'undefined') {
+    return { packsOpened: 0, lastPack: null }
+  }
+  return readGuestPackState()
+}
+
 export const Route = createFileRoute('/')({
   component: HomePage,
 })
@@ -32,17 +39,21 @@ type SealedCardContentProps = {
   message: string
 }
 
-const playingCardClass =
-  'bg-card text-card-foreground aspect-[5/7] w-full overflow-hidden rounded-[1.75rem] border-2 border-border/70 py-0 text-left shadow-[0_24px_60px_-36px_rgba(0,0,0,0.9)] transition-transform duration-150 transition-all'
 const stackTransitionMs = 180
 
 function HomePage(): JSX.Element {
   const { isLoaded, userId } = useAuth()
   const isHydrated = useHydrated()
   const openPack = useAction(api.packs.openPack)
-  const [activePack, setActivePack] = useState<OpenedPack | null>(null)
-  const [guestPackCount, setGuestPackCount] = useState(0)
-  const [savedGuestPack, setSavedGuestPack] = useState<OpenedPack | null>(null)
+  const [activePack, setActivePack] = useState<OpenedPack | null>(
+    () => readInitialGuestPackState().lastPack,
+  )
+  const [guestPackCount, setGuestPackCount] = useState<number>(
+    () => readInitialGuestPackState().packsOpened,
+  )
+  const [savedGuestPack, setSavedGuestPack] = useState<OpenedPack | null>(
+    () => readInitialGuestPackState().lastPack,
+  )
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [transitioningFromIndex, setTransitioningFromIndex] = useState<
     number | null
@@ -51,32 +62,9 @@ function HomePage(): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const previousSelectedIndexRef = useRef(0)
 
-  function resetTransitionState(index: number): void {
-    previousSelectedIndexRef.current = index
-    setTransitioningFromIndex(null)
-  }
-
-  useEffect(() => {
-    if (!isHydrated || !isLoaded || userId) return
-
-    const guestPackState = readGuestPackState()
-    setGuestPackCount(guestPackState.packsOpened)
-    setSavedGuestPack(guestPackState.lastPack)
-    setActivePack(guestPackState.lastPack)
-  }, [isHydrated, isLoaded, userId])
-
-  useEffect(() => {
-    if (!userId) {
-      return
-    }
-
-    setGuestPackCount(0)
-    setSavedGuestPack(null)
-  }, [userId])
-
   useEffect(() => {
     if (!activePack) {
-      resetTransitionState(0)
+      previousSelectedIndexRef.current = 0
       return
     }
 
@@ -111,7 +99,8 @@ function HomePage(): JSX.Element {
 
       setActivePack(openedPack)
       setSelectedIndex(0)
-      resetTransitionState(0)
+      previousSelectedIndexRef.current = 0
+      setTransitioningFromIndex(null)
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Pack opening failed',
@@ -134,7 +123,8 @@ function HomePage(): JSX.Element {
   function handleResetPack(): void {
     setActivePack(null)
     setSelectedIndex(0)
-    resetTransitionState(0)
+    previousSelectedIndexRef.current = 0
+    setTransitioningFromIndex(null)
   }
 
   const isPackReady = activePack !== null
@@ -150,7 +140,7 @@ function HomePage(): JSX.Element {
       <div className="flex w-full max-w-md flex-col items-center gap-6">
         {!isPackReady ? (
           isGuestOutOfPacks ? (
-            <Card className={`${playingCardClass} w-full`}>
+            <Card className="playing-card">
               <CardContent className="relative flex h-full min-h-0 flex-col justify-between gap-6 p-5 sm:p-6">
                 <div
                   aria-hidden
@@ -188,7 +178,7 @@ function HomePage(): JSX.Element {
               disabled={isOpenPackDisabled}
               className="w-full rounded-[1.75rem] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <Card className={`${playingCardClass} hover:-translate-y-1`}>
+              <Card className="playing-card hover:-translate-y-1">
                 <CardContent className="relative flex h-full min-h-0 flex-col justify-between p-5 sm:p-6">
                   <div
                     aria-hidden

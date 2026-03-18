@@ -37,9 +37,6 @@ type ArrowButtonProps = {
   onClick: () => void
 }
 
-const playingCardClass =
-  'bg-card text-card-foreground h-full w-full overflow-hidden rounded-[1.75rem] border-2 border-border/70 py-0 text-left shadow-[0_24px_60px_-36px_rgba(0,0,0,0.9)]'
-
 export function PackCarousel({
   cards,
   selectedIndex,
@@ -114,7 +111,7 @@ export function PackCarousel({
                   <div
                     className={`relative h-[27.5rem] w-[19.5rem] transition-transform duration-150 ${isCurrentCard ? 'group cursor-pointer hover:scale-[1.02] hover:-translate-y-2 active:scale-95' : ''}`}
                   >
-                    <Card className={playingCardClass}>
+                    <Card className="bg-card text-card-foreground h-full w-full overflow-hidden rounded-[1.75rem] border-2 border-border/70 py-0 text-left shadow-[0_24px_60px_-36px_rgba(0,0,0,0.9)]">
                       <CardContent className="relative flex h-full min-h-0 flex-col p-3">
                         <div
                           aria-hidden

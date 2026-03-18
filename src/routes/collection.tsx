@@ -3,7 +3,7 @@ import type { JSX } from 'react'
 import { SignUp, useAuth } from '@clerk/tanstack-react-start'
 import { CaretDownIcon, CircleNotchIcon } from '@phosphor-icons/react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { useMutation, usePaginatedQuery, useQuery } from 'convex/react'
+import { usePaginatedQuery, useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { TrackCardFace } from '#/components/track-card-face'
 import { buttonVariants } from '#/components/ui/button'
@@ -35,9 +35,9 @@ const sortOptions: Array<{ label: string; value: CollectionSort }> = [
 
 function CollectionPage(): JSX.Element {
   const { isLoaded, userId } = useAuth()
-  const ensureViewer = useMutation(api.users.ensureViewer)
   const [sort, setSort] = useState<CollectionSort>('recent')
   const [inspectedCardId, setInspectedCardId] = useState<string | null>(null)
+  const loadMoreRef = useRef<HTMLDivElement>(null)
   const summary = useQuery(api.collection.getSummary, userId ? {} : 'skip')
   const { results, status, loadMore } = usePaginatedQuery(
     api.collection.listPage,
@@ -48,39 +48,6 @@ function CollectionPage(): JSX.Element {
       : 'skip',
     { initialNumItems: 20 },
   )
-
-  useEffect(() => {
-    if (!userId) {
-      return
-    }
-
-    void ensureViewer({})
-  }, [ensureViewer, userId])
-
-  if (!isLoaded) {
-    return <main className="min-h-[calc(100dvh-4rem)]" />
-  }
-
-  if (!userId) {
-    return (
-      <main className="bg-background flex min-h-[calc(100dvh-4rem)] items-center justify-center px-6 py-8">
-        <SignUp />
-      </main>
-    )
-  }
-
-  const isEmpty = results.length === 0 && status !== 'LoadingFirstPage'
-  const isLoading = status === 'LoadingFirstPage'
-  const activeSortLabel =
-    sortOptions.find((option) => option.value === sort)?.label ?? 'Recent'
-  const summaryItems = [
-    { label: 'songs', value: summary?.uniqueSongs ?? 0 },
-    { label: 'copies', value: summary?.totalCopies ?? 0 },
-    { label: 'mythic', value: summary?.mythicCount ?? 0 },
-    { label: 'rare', value: summary?.rareCount ?? 0 },
-  ]
-
-  const loadMoreRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!loadMoreRef.current || status !== 'CanLoadMore') return
@@ -114,6 +81,29 @@ function CollectionPage(): JSX.Element {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [inspectedCardId])
+
+  if (!isLoaded) {
+    return <main className="min-h-[calc(100dvh-4rem)]" />
+  }
+
+  if (!userId) {
+    return (
+      <main className="bg-background flex min-h-[calc(100dvh-4rem)] items-center justify-center px-6 py-8">
+        <SignUp />
+      </main>
+    )
+  }
+
+  const isEmpty = results.length === 0 && status !== 'LoadingFirstPage'
+  const isLoading = status === 'LoadingFirstPage'
+  const activeSortLabel =
+    sortOptions.find((option) => option.value === sort)?.label ?? 'Recent'
+  const summaryItems = [
+    { label: 'songs', value: summary?.uniqueSongs ?? 0 },
+    { label: 'copies', value: summary?.totalCopies ?? 0 },
+    { label: 'mythic', value: summary?.mythicCount ?? 0 },
+    { label: 'rare', value: summary?.rareCount ?? 0 },
+  ]
 
   const inspectedCard = inspectedCardId
     ? results.find((r) => r._id === inspectedCardId)
