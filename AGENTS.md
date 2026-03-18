@@ -6,6 +6,7 @@ Generally speaking, you should browse the codebase to figure out what is going o
 
 - All of `bun fmt`, `bun lint`, and `bun typecheck` must pass before considering tasks completed.
 - Never use `bun test`, use `bun run test` (runs Vitest).
+- Never write a useEffect. If you really think you need to, see the no-use-effect skill.
 
 ## Project Snapshot
 
