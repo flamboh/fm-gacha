@@ -1,3 +1,7 @@
-bun run fmt
-bun run lint
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
+
+prettier $STAGED --write --ignore-unknown
+eslint $STAGED --no-warn-ignored
+git update-index --again
+
 bun run typecheck
