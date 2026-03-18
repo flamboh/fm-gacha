@@ -3,7 +3,7 @@ import type { JSX } from 'react'
 import { SignUp, useAuth } from '@clerk/tanstack-react-start'
 import { CaretDownIcon, CircleNotchIcon } from '@phosphor-icons/react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { useMutation, usePaginatedQuery, useQuery } from 'convex/react'
+import { usePaginatedQuery, useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { TrackCardFace } from '#/components/track-card-face'
 import { buttonVariants } from '#/components/ui/button'
@@ -35,7 +35,6 @@ const sortOptions: Array<{ label: string; value: CollectionSort }> = [
 
 function CollectionPage(): JSX.Element {
   const { isLoaded, userId } = useAuth()
-  const ensureViewer = useMutation(api.users.ensureViewer)
   const [sort, setSort] = useState<CollectionSort>('recent')
   const [inspectedCardId, setInspectedCardId] = useState<string | null>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
@@ -49,14 +48,6 @@ function CollectionPage(): JSX.Element {
       : 'skip',
     { initialNumItems: 20 },
   )
-
-  useEffect(() => {
-    if (!userId) {
-      return
-    }
-
-    void ensureViewer({})
-  }, [ensureViewer, userId])
 
   useEffect(() => {
     if (!loadMoreRef.current || status !== 'CanLoadMore') return

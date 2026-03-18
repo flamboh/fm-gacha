@@ -14,6 +14,13 @@ import {
   saveGuestPack,
 } from '#/lib/guest-pack-storage'
 
+function readInitialGuestPackState() {
+  if (typeof window === 'undefined') {
+    return { packsOpened: 0, lastPack: null }
+  }
+  return readGuestPackState()
+}
+
 export const Route = createFileRoute('/')({
   component: HomePage,
 })
@@ -38,9 +45,15 @@ function HomePage(): JSX.Element {
   const { isLoaded, userId } = useAuth()
   const isHydrated = useHydrated()
   const openPack = useAction(api.packs.openPack)
-  const [activePack, setActivePack] = useState<OpenedPack | null>(null)
-  const [guestPackCount, setGuestPackCount] = useState(0)
-  const [savedGuestPack, setSavedGuestPack] = useState<OpenedPack | null>(null)
+  const [activePack, setActivePack] = useState<OpenedPack | null>(
+    () => readInitialGuestPackState().lastPack,
+  )
+  const [guestPackCount, setGuestPackCount] = useState<number>(
+    () => readInitialGuestPackState().packsOpened,
+  )
+  const [savedGuestPack, setSavedGuestPack] = useState<OpenedPack | null>(
+    () => readInitialGuestPackState().lastPack,
+  )
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [transitioningFromIndex, setTransitioningFromIndex] = useState<
     number | null
@@ -48,24 +61,6 @@ function HomePage(): JSX.Element {
   const [isOpening, setIsOpening] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const previousSelectedIndexRef = useRef(0)
-
-  useEffect(() => {
-    if (!isHydrated || !isLoaded || userId) return
-
-    const guestPackState = readGuestPackState()
-    setGuestPackCount(guestPackState.packsOpened)
-    setSavedGuestPack(guestPackState.lastPack)
-    setActivePack(guestPackState.lastPack)
-  }, [isHydrated, isLoaded, userId])
-
-  useEffect(() => {
-    if (!userId) {
-      return
-    }
-
-    setGuestPackCount(0)
-    setSavedGuestPack(null)
-  }, [userId])
 
   useEffect(() => {
     if (!activePack) {

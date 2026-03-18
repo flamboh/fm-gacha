@@ -12,24 +12,29 @@ import {
 export function GuestPackImporter() {
   const { isLoaded, userId } = useAuth()
   const importGuestPack = useMutation(api.users.importGuestPack)
-  const importedUserIdRef = useRef<string | null>(null)
+  const ensureViewer = useMutation(api.users.ensureViewer)
+  const handledUserIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (!isLoaded || !userId) {
-      importedUserIdRef.current = null
+      handledUserIdRef.current = null
       return
     }
 
-    if (importedUserIdRef.current === userId) {
+    if (handledUserIdRef.current === userId) {
       return
     }
+
+    handledUserIdRef.current = userId
+
+    void ensureViewer({}).catch((error) => {
+      console.error('ensureViewer failed', error)
+    })
 
     const guestPackState = readGuestPackState()
     if (!guestPackState.lastPack) {
       return
     }
-
-    importedUserIdRef.current = userId
 
     void importGuestPack({
       pack: guestPackState.lastPack,
@@ -38,10 +43,10 @@ export function GuestPackImporter() {
         clearGuestPackState()
       })
       .catch((error) => {
-        importedUserIdRef.current = null
+        handledUserIdRef.current = null
         console.error('Guest pack import failed', error)
       })
-  }, [importGuestPack, isLoaded, userId])
+  }, [ensureViewer, importGuestPack, isLoaded, userId])
 
   return null
 }
