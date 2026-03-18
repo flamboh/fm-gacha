@@ -273,6 +273,20 @@
   }
 }
 
+@layer components {
+  .nav-link {
+    @apply text-muted-foreground hover:text-foreground border border-transparent focus-visible:ring-ring rounded-md px-4 py-2 text-sm uppercase tracking-[0.24em] transition-colors outline-none focus-visible:ring-2;
+  }
+
+  .nav-link-active {
+    @apply bg-accent text-accent-foreground border-border shadow-xs;
+  }
+
+  .playing-card {
+    @apply bg-card text-card-foreground aspect-[5/7] w-full overflow-hidden rounded-[1.75rem] border-2 border-border/70 py-0 text-left shadow-[0_24px_60px_-36px_rgba(0,0,0,0.9)] transition-all duration-150;
+  }
+}
+
 @layer utilities {
   .collection-enter {
     animation: collection-enter 360ms cubic-bezier(0.2, 0, 0, 1) both;

@@ -62,18 +62,6 @@ const sampleOne = <T>(items: readonly T[]) => {
   return items[getRandomInt(0, items.length - 1)] ?? null
 }
 
-const readLastFmApiKey = (): string => {
-  const apiKey = process.env.LASTFM_API_KEY?.trim()
-  if (!apiKey) {
-    lastFmError(
-      'MISSING_LASTFM_API_KEY',
-      'Missing required env var: LASTFM_API_KEY',
-    )
-  }
-
-  return apiKey
-}
-
 const assignRarity = (
   entry: TrackPoolEntry,
   thresholds: { uncommon: number; rare: number; mythic: number },
@@ -131,14 +119,8 @@ function calculatePlayListenerRatio(
 }
 
 function getTrackImageUrl(data: LastFmTrackInfo['track']): string | undefined {
-  const image = data?.album?.image?.find((entry) => entry.size === 'extralarge')
-  const imageUrl = image?.['#text']?.trim()
-
-  if (!imageUrl) {
-    return undefined
-  }
-
-  return imageUrl
+  const imageUrl = data?.album?.image?.find((entry) => entry.size === 'extralarge')?.['#text']?.trim()
+  return imageUrl || undefined
 }
 
 function getTrackWikiSummary(
@@ -149,16 +131,12 @@ function getTrackWikiSummary(
     return undefined
   }
 
-  const sanitizedSummary = summary
+  const sanitized = summary
     .replace(/<a\b[^>]*>[\s\S]*?<\/a>/gi, '')
     .replace(/<[^>]+>/g, '')
     .trim()
 
-  if (!sanitizedSummary) {
-    return undefined
-  }
-
-  return sanitizedSummary
+  return sanitized || undefined
 }
 
 async function buildArtistGenresMap(
@@ -367,7 +345,10 @@ export const openPack = action({
   args: {},
   returns: openedPackValidator,
   handler: async (ctx): Promise<OpenedPack> => {
-    const apiKey = readLastFmApiKey()
+    const apiKey = process.env.LASTFM_API_KEY?.trim()
+    if (!apiKey) {
+      lastFmError('MISSING_LASTFM_API_KEY', 'Missing required env var: LASTFM_API_KEY')
+    }
     const identity = await ctx.auth.getUserIdentity()
     const { cards, themeTag } = await pickCards(apiKey)
 

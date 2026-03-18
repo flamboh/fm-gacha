@@ -100,16 +100,12 @@ async function fetchLastFm<T extends LastFmErrorResponse>(
   return data
 }
 
-function normalizeGenre(genre: string): string {
-  return genre.trim().toLowerCase()
-}
-
 function dedupeGenres(genres: string[]): string[] {
   const seen = new Set<string>()
   const deduped: string[] = []
 
   for (const genre of genres) {
-    const normalized = normalizeGenre(genre)
+    const normalized = genre.trim().toLowerCase()
     if (!normalized || seen.has(normalized)) {
       continue
     }

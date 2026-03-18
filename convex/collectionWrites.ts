@@ -1,9 +1,8 @@
 import { internalMutation } from './_generated/server'
 import {
-  getArtistSortValue,
   getRarityRank,
   getSongKey,
-  getTitleSortValue,
+  normalizeCollectionValue,
 } from './collectionModel'
 import type { MutationCtx } from './_generated/server'
 import { packCardValidator } from './packModel'
@@ -93,8 +92,8 @@ export async function storePackForViewer(
         firstCollectedAt: collectedAt,
         lastCollectedAt: collectedAt,
         favorite: false,
-        artistSort: getArtistSortValue(card.artist),
-        titleSort: getTitleSortValue(card.title),
+        artistSort: normalizeCollectionValue(card.artist),
+        titleSort: normalizeCollectionValue(card.title),
         rarity: card.rarity,
         rarityRank,
       })
@@ -104,8 +103,8 @@ export async function storePackForViewer(
     const nextEntryPatch = {
       copyCount: existingCollectionEntry.copyCount + 1,
       lastCollectedAt: collectedAt,
-      artistSort: getArtistSortValue(card.artist),
-      titleSort: getTitleSortValue(card.title),
+      artistSort: normalizeCollectionValue(card.artist),
+      titleSort: normalizeCollectionValue(card.title),
     }
 
     if (existingCollectionEntry.rarityRank < rarityRank) {
