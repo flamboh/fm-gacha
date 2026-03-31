@@ -135,7 +135,7 @@ export function PackCarousel({
   )
 }
 
-function getStackCardStyle(
+export function getStackCardStyle(
   index: number,
   offset: number,
   selectedIndex: number,
