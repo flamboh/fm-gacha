@@ -142,7 +142,7 @@ function StatBlock({ label, value }: StatBlockProps): JSX.Element {
   )
 }
 
-function formatCount(value: number): string {
+export function formatCount(value: number): string {
   return new Intl.NumberFormat('en-US', {
     notation: 'compact',
     maximumFractionDigits: 1,

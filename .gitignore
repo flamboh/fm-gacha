@@ -1,4 +1,8 @@
 node_modules
+playwright-report
+test-results
+playwright/.clerk
+tmp/*
 .DS_Store
 dist
 dist-ssr
@@ -10,4 +14,3 @@ dist-ssr
 .output
 .vinxi
 __unconfig*
-todos.json

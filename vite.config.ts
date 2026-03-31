@@ -29,7 +29,7 @@ const config = defineConfig({
         test: {
           name: 'frontend',
           include: ['**/*.test.{ts,tsx,js,jsx}'],
-          exclude: ['convex/**'],
+          exclude: ['convex/**', 'e2e/**'],
           environment: 'jsdom',
         },
       },
